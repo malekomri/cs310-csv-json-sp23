@@ -84,8 +84,53 @@ public class Converter {
         
         try {
         
-            // INSERT YOUR CODE HERE
-            
+ // Create a CSV reader
+ CSVReader reader = new CSVReader(new StringReader(csvString));
+        
+ // Read the header row
+ String[] header = reader.readNext();
+ 
+ // Create a JSON object to store the JSON data
+ JsonObject json = new JsonObject();
+ 
+ // Add the header row to the JSON object
+ json.put("ColHeadings", header);
+ 
+ // Create a list to store the production numbers (ProdNum)
+ JsonArray prodNums = new JsonArray();
+ 
+ // Create a list to store the data rows
+ JsonArray data = new JsonArray();
+ 
+ // Read the rest of the data rows
+ String[] row;
+ while ((row = reader.readNext()) != null) {
+     // Add the production number to the list
+     prodNums.add(row[0]);
+     
+     // Create a list to store the values of the current data row
+     JsonArray values = new JsonArray();
+     
+     // Add the values of the current data row to the list
+     for (int i = 1; i < header.length; i++) {
+         try {
+             int value = Integer.parseInt(row[i]);
+             values.add(value);
+         } catch (NumberFormatException e) {
+             values.add(row[i]);
+         }
+     }
+     
+     // Add the list of values to the data list
+     data.add(values);
+ }
+ 
+ // Add the ProdNums and Data lists to the JSON object
+ json.put("ProdNums", prodNums);
+ json.put("Data", data);
+ 
+ // Convert the JSON object to a string
+ result = json.toJson();            
         }
         catch (Exception e) {
             e.printStackTrace();
