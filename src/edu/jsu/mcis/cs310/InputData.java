@@ -1,3 +1,10 @@
+/*
+ * Author: Malek 
+ * CS 310
+ * Project 1 
+ */
+
+
 package edu.jsu.mcis.cs310;
 
 import java.io.BufferedReader;

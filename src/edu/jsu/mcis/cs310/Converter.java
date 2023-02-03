@@ -1,3 +1,9 @@
+/*
+ * Author: Malek 
+ * CS 310
+ * Project 1 
+ */
+
 package edu.jsu.mcis.cs310;
 
 import com.github.cliftonlabs.json_simple.*;

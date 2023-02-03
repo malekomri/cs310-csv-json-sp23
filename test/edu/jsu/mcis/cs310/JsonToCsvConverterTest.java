@@ -1,3 +1,10 @@
+/*
+ * Author: Malek 
+ * CS 310
+ * Project 1 
+ */
+
+
 package edu.jsu.mcis.cs310;
 
 import com.github.cliftonlabs.json_simple.*;
@@ -6,6 +13,8 @@ import static org.junit.Assert.*;
 
 public class JsonToCsvConverterTest {
 
+    
+    
     private String csvString, jsonString;
     private JsonObject json;
     
