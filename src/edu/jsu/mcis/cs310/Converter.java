@@ -147,8 +147,16 @@ public class Converter {
         
         try {
             
-            // INSERT YOUR CODE HERE
-            
+// Create a JSON object from the input JSON string
+JsonObject json = (JsonObject) Jsoner.deserialize(jsonString);
+        
+// Get the header row and the ProdNums and Data lists from the JSON object
+String[] header = json.getCollection("ColHeadings").toArray(new String[0]);
+JsonArray prodNums = json.getCollection("ProdNums");
+JsonArray data = json.getCollection("Data");
+
+// Create a string writer to store the CSV data
+StringWriter stringWriter = new StringWriter();            
         }
         catch (Exception e) {
             e.printStackTrace();
