@@ -6,17 +6,9 @@
 
 package edu.jsu.mcis.cs310;
 
-import java.util.Arrays;
 import java.io.StringReader;
-import java.io.StringWriter;
-
 import com.github.cliftonlabs.json_simple.*;
 import com.opencsv.*;
-
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 
 public class Converter {
@@ -156,23 +148,9 @@ public class Converter {
         String result = ""; // default return value; replace later!
         
         try {
-/*            
-//Create a JSON object from the input JSON string
-JsonObject json = (JsonObject) Jsoner.deserialize(jsonString);
+           
 
-// Get the header row and the ProdNums and Data lists from the JSON object
-String[] header = json.get("ColHeadings").toArray(new String[0]);
-JsonArray data = json.getCollection("Data");
-JsonArray prodNums = (JsonArray) json.get("ProdNums");
-*/
-
-JSONObject json = (JSONObject) JSONValue.parse(jsonString);
-String[] header = json.get("ColHeadings").toArray(new String[0]);
-JSONArray data = (JSONArray) json.get("Data");
-JSONArray prodNums = (JSONArray) json.get("ProdNums");
-
-// Create a string writer to store the CSV data
-StringWriter stringWriter = new StringWriter();            
+        
         }
         catch (Exception e) {
             e.printStackTrace();
