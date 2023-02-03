@@ -1,3 +1,9 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/Users/omri/Downloads/libraries/commons-lang3-3.12.0.jar",
+        "/Users/omri/Downloads/libraries/opencsv-5.7.1.jar",
+        "/Users/omri/Downloads/libraries/json-simple-4.0.1.jar"
+    ]
 }
