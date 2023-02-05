@@ -6,11 +6,21 @@
 
 package edu.jsu.mcis.cs310;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
+
 import com.github.cliftonlabs.json_simple.*;
 import com.opencsv.*;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsonable;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.opencsv.CSVWriter;
+import java.text.DecimalFormat;
 public class Converter {
     
     /*
@@ -143,21 +153,48 @@ public class Converter {
     }
     
    
-    public static String jsonToCsv(String jsonString) {
+    public static String jsonToCsv(String jsonString) throws IOException {
         
-        String result = ""; // default return value; replace later!
-        
-        try {
-           
+        Object obj = Jsoner.deserialize(jsonString, new JsonObject());
+        JsonArray array = (JsonArray) obj;
 
+
+                // Jsoner parser = new JSONParser();
+                // Object obj = parser.parse(jsonString);
         
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+                // Write to a string
+                StringWriter stringWriter = new StringWriter();
+                CSVWriter writer = new CSVWriter(stringWriter);
         
-        return result.trim();
+                // Write header
+                List<String> header = ((JsonObject) array.get(0)).keySet().stream().collect(Collectors.toList());
+                writer.writeNext(header.toArray(new String[0]));
+        
+                // Write content
+                for (Object o : array) {
+                    JsonObject jsonLineItem = (JsonObject) o;
+                    String[] line = header.stream().map(h -> {
+                        Object value = jsonLineItem.get(h);
+                        if (h.equals("episode_number")) {
+                            DecimalFormat df = new DecimalFormat("00");
+                            return df.format(value);
+                        } else {
+                            return value.toString();
+                        }
+                    }).toArray(String[]::new);
+                    writer.writeNext(line);
+                }
+        
+                writer.close();
+        
+                // Get the CSV data as a string
+                String csvData = stringWriter.toString();
+        
+                return csvData;
         
     }
     
+
+
+
 }
