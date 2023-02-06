@@ -13,14 +13,10 @@ import java.io.StringWriter;
 import com.github.cliftonlabs.json_simple.*;
 import com.opencsv.*;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsonable;
 
-
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import com.opencsv.CSVWriter;
-import java.text.DecimalFormat;
 public class Converter {
     
     /*
@@ -152,47 +148,35 @@ public class Converter {
         
     }
     
-   
+   // --------- JSON to CVS 
     public static String jsonToCsv(String jsonString) throws IOException {
-        
         Object obj = Jsoner.deserialize(jsonString, new JsonObject());
         JsonArray array = (JsonArray) obj;
-
-
-                // Jsoner parser = new JSONParser();
-                // Object obj = parser.parse(jsonString);
-        
-                // Write to a string
-                StringWriter stringWriter = new StringWriter();
-                CSVWriter writer = new CSVWriter(stringWriter);
-        
-                // Write header
-                List<String> header = ((JsonObject) array.get(0)).keySet().stream().collect(Collectors.toList());
-                writer.writeNext(header.toArray(new String[0]));
-        
-                // Write content
-                for (Object o : array) {
-                    JsonObject jsonLineItem = (JsonObject) o;
-                    String[] line = header.stream().map(h -> {
-                        Object value = jsonLineItem.get(h);
-                        if (h.equals("episode_number")) {
-                            DecimalFormat df = new DecimalFormat("00");
-                            return df.format(value);
-                        } else {
-                            return value.toString();
-                        }
-                    }).toArray(String[]::new);
-                    writer.writeNext(line);
-                }
-        
-                writer.close();
-        
-                // Get the CSV data as a string
-                String csvData = stringWriter.toString();
-        
-                return csvData;
-        
-    }
+      
+        // Get header from first JSON object in the array
+        JsonObject firstObject = (JsonObject) array.get(0);
+        String[] header = firstObject.keySet().toArray(new String[0]);
+        List<String[]> csvData = new ArrayList<>();
+        csvData.add(header);
+      
+        // Add data for each JSON object in the array
+        for (Object jsonObject : array) {
+          JsonObject objData = (JsonObject) jsonObject;
+          String[] data = new String[header.length];
+          for (int i = 0; i < header.length; i++) {
+            data[i] = objData.get(header[i]).toString();
+          }
+          csvData.add(data);
+        }
+      
+        // Write to a string
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter writer = new CSVWriter(stringWriter);
+        writer.writeAll(csvData);
+        writer.close();
+      
+        return stringWriter.toString();
+      }
     
 
 
