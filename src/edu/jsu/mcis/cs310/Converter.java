@@ -6,16 +6,14 @@
 
 package edu.jsu.mcis.cs310;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 
 import com.github.cliftonlabs.json_simple.*;
 import com.opencsv.*;
 import com.github.cliftonlabs.json_simple.JsonObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.opencsv.CSVWriter;
 public class Converter {
     
@@ -149,33 +147,82 @@ public class Converter {
     }
     
    // --------- JSON to CVS 
-    public static String jsonToCsv(String jsonString) throws IOException {
-        Object obj = Jsoner.deserialize(jsonString, new JsonObject());
-        JsonArray array = (JsonArray) obj;
-      
-        // Get header from first JSON object in the array
-        JsonObject firstObject = (JsonObject) array.get(0);
-        String[] header = firstObject.keySet().toArray(new String[0]);
-        List<String[]> csvData = new ArrayList<>();
-        csvData.add(header);
-      
-        // Add data for each JSON object in the array
-        for (Object jsonObject : array) {
-          JsonObject objData = (JsonObject) jsonObject;
-          String[] data = new String[header.length];
-          for (int i = 0; i < header.length; i++) {
-            data[i] = objData.get(header[i]).toString();
-          }
-          csvData.add(data);
-        }
-      
-        // Write to a string
+   public static String jsonToCsv(String jsonString) {
+        
+    String result = ""; // default return value; initialize to an empty string 
+            // format for decimal values
+          DecimalFormat decimalFormat = new DecimalFormat("00"); 
+    try {
+        
+         JsonObject jsonObject = Jsoner.deserialize(jsonString, new JsonObject());
+         // deserialize the input JSON string into a JsonObject
+        
+        JsonArray colheadings = new JsonArray();
+        colheadings=(JsonArray) (jsonObject.get("ColHeadings"));
+        // get the column headings from the JSON object
+        
+        JsonArray ProdNumbers = new JsonArray();
+        ProdNumbers=(JsonArray) (jsonObject.get("ProdNums"));
+        // get the product numbers from the JSON object
+        
+        JsonArray bigdata = new JsonArray();
+        bigdata=(JsonArray) (jsonObject.get("Data"));
+        // get the data from the JSON object
+        
         StringWriter stringWriter = new StringWriter();
-        CSVWriter writer = new CSVWriter(stringWriter);
-        writer.writeAll(csvData);
-        writer.close();
-      
-        return stringWriter.toString();
-      }
+        try (CSVWriter csvWriter = new CSVWriter(stringWriter, ',', '"', '\\', "\n")) {
+            String[] headings = new String[colheadings.size()];
+            for (int i = 0; i < colheadings.size(); i++) {
+                headings[i] = colheadings.get(i).toString();
+            }
+            csvWriter.writeNext(headings);
+            // write the column headings to the CSV file
+            
+            for(int i=0;i<ProdNumbers.size();i++){
+                String[] row= new  String[colheadings.size()];
+                JsonArray data = new JsonArray(); 
+                data=(JsonArray) bigdata.get(i);
+                
+                row[0]=ProdNumbers.get(i).toString();
+                // add the product number to the first column of the row
+                for (int j = 0; j < data.size(); j++) {
+                    
+                    if(data.get(j)==data.get(colheadings.indexOf("Episode")-1)){
+                        // check if the current data value corresponds to the "Episode" column
+                        
+                        int number = Integer.parseInt(data.get(j).toString());
+                        String formattedNumber = "";
+                        
+                        formattedNumber = decimalFormat.format(number);
+                        // format the episode number to the specified format
+                        
+                        row[j+1]=formattedNumber;
+                    }
+                    else{
+                        row[j+1] = data.get(j).toString();
+                    }
+                    
+                }
+                
+                csvWriter.writeNext(row);
+                // write the row to the CSV file
+                
+            }
+        }
+
+        result = stringWriter.toString();
+        // convert the StringWriter to a string and store it in the `result` variable
+        
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+    }
+    
+    return result.trim();
+    // return the result with leading and trailing whitespaces trimmed
+    
+    
+}
+
 
 }
